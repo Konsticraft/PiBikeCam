@@ -13,13 +13,13 @@ def convert_to_mp4(input_file, final = False):
         p.join()
 
 def converter_process(input_file):
-    command = f"ffmpeg -i output/{input_file}.h264 -codec copy videos/{input_file}.mp4"
-    print(f"converting with command {command}\n")
+    command = f"ffmpeg -i /home/pi/PiBikeCam/output/{input_file}.h264 -codec copy /home/pi/PiBikeCam/videos/{input_file}.mp4"
+    #print(f"converting with command {command}\n")
     converter_process = subprocess.run(command, shell = True)
     
-    os.remove(f"output/{input_file}.h264")
+    os.remove(f"/home/pi/PiBikeCam/output/{input_file}.h264")
     
-def record_video(SEGMENT_LEN = 20):
+def record_video(SEGMENT_LEN = 300):
     
     # Set up the camera
     camera = picamera.PiCamera()
@@ -28,7 +28,7 @@ def record_video(SEGMENT_LEN = 20):
 
     # Create a file name template for the video segments
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-    output_file_template = f"output/video_{timestamp}.h264"
+    output_file_template = f"/home/pi/PiBikeCam/output/video_{timestamp}.h264"
     file_name = f"video_{timestamp}"
 
 
@@ -38,7 +38,7 @@ def record_video(SEGMENT_LEN = 20):
         while True:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
             camera.annotate_text = timestamp
-            output_file_template = f"output/video_{timestamp}.h264"
+            output_file_template = f"/home/pi/PiBikeCam/output/video_{timestamp}.h264"
             print("starting recording " + output_file_template)
             file_name = f"video_{timestamp}"
             camera.start_recording(output_file_template)

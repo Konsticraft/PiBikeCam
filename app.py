@@ -2,18 +2,29 @@ from flask import Flask, render_template, send_file, request, Response
 import os
 import subprocess
 import multiprocessing
+import signal
 
 app = Flask(__name__)
-video_dir = "videos"  # Directory where your recorded videos are stored
+video_dir = "/home/pi/PiBikeCam/videos"  # Directory where your recorded videos are stored
 recording_running = False
 recording_process = None
 
 def start_recording():
-	recording_process = subprocess.Popen(["python3", "cam.py"])
+	recording_process = subprocess.Popen(["python3", "/home/pi/PiBikeCam/cam.py"])
+	
+def signal_handler(sig, frame):
+	print("shutting down server")
+	global recording_running
+	global recording_process
+	if recording_running:
+	    recording_process.send_signal(signal.SIGINT)
+	    recording_running = False
+	sys.exit(0)
 
 @app.route('/start_recording')
 def start_recording_route():
 	global recording_running
+	global recording_process
 	if not recording_running:
 		recording_running = True
 		recording_process = multiprocessing.Process(target=start_recording)
@@ -48,4 +59,6 @@ def stream_video(video_name):
     return Response(generate(), mimetype='video/mp4')
 
 if __name__ == '__main__':
+    start_recording_route()
+    signal.signal(signal.SIGINT, signal_handler)
     app.run(host='0.0.0.0', port=8080)
