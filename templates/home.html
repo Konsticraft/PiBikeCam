@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+    <form action="/start_recording" method="get">
+        <button type="submit">Start Recording</button>
+    </form>
+    <div class="row">
+        <div class = "col" style="width: 75%;">
+            <div class="embed-responsive embed-responsive-16by9">
+                <video controls width="1280" height="720">
+                    <source src="{{ url_for('stream_video', video_name=request.args.get('video_name', '')) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+        <div class="col-md-auto">
+            <h1>Recorded Videos</h1>
+            {% for video in video_list %}
+            <div class="row">
+                <div class="col">
+                    <img src="{{ url_for('serve_thumb', thumb_name=video.thumb_path) }}" alt="thumbnail" style="height: 108px;">
+                </div>
+                <div class="col">
+                    {{video.timestr}}
+                    <button type="submit">Play</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            <form method="get">
+                <select name="video_name">
+                    {% for video in video_list %}
+                    <option value="{{ video.filename }}">{{ video.timestr }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="Play">
+            </form>
+        </div>
+    </div>
+{% endblock content %}

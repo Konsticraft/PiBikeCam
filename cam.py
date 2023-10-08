@@ -41,6 +41,7 @@ def record_video(SEGMENT_LEN = 300):
             output_file_template = f"/home/pi/PiBikeCam/output/video_{timestamp}.h264"
             print("starting recording " + output_file_template)
             file_name = f"video_{timestamp}"
+            #TODO: add thumbnail creation
             camera.start_recording(output_file_template)
             start_time = time.time()
 
