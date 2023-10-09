@@ -24,11 +24,14 @@ def get_videos():
         filename = file
         time = datetime.datetime.strptime(file, "video_%Y-%m-%d_%H_%M_%S.mp4")
         timestr = datetime.datetime.strftime(time, "%d.%m.%Y %H:%M")
+        date = datetime.datetime.strftime(time, "%Y-%m-%d")
         #thumb = os.path.join(thumb_dir,file.replace("mp4", "png")).replace("\\","/")
         thumb = file.replace("mp4", "png")
+        print(time)
         videos.append({
               "filename" : file,
               "timestamp" : time,
+              "date" : date,
               "timestr" : timestr,
               "thumb_path" : thumb
 		})
@@ -59,6 +62,9 @@ def start_recording_route():
 		recording_running = False
 		return "stopped recording"
 
+@app.route('/settings')
+def settings_route():
+     return render_template('settings.html')
 
 @app.route('/home')
 @app.route('/')
