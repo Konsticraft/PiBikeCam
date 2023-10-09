@@ -7,10 +7,11 @@
         <!-- Video Player -->
         <div class = "col" style="width: 75%;">
             <div class="embed-responsive embed-responsive-16by9">
-                <video controls width="1280" height="720">
-                    <source src="{{ url_for('stream_video', video_name=request.args.get('video_name', '')) }}" type="video/mp4">
+                <h1>Select a Video</h1>
+                <!-- <video controls autoplay width="1280" height="720">
+                    <source src="{{ url_for('serve_video', video_name=request.args.get('video_name', '')) }}" type="video/mp4">
                     Your browser does not support the video tag.
-                </video>
+                </video> -->
             </div>
         </div>
         <div class="col-md-auto">
@@ -39,15 +40,6 @@
                 </div>
             </div>
             {% endfor %}
-
-            <!-- <form method="get">
-                <select name="video_name">
-                    {% for video in video_list %}
-                    <option value="{{ video.filename }}">{{ video.timestr }}</option>
-                    {% endfor %}
-                </select>
-                <input type="submit" value="Play">
-            </form> -->
         </div>
     </div>
 
@@ -63,12 +55,9 @@
                 var videoElement = document.createElement("video");
                 videoElement.src = videoUrl;
                 videoElement.controls = true;
-                
-                // Create a modal or use an existing one to display the video
-                // Example: You can use Bootstrap modal
-                var modal = $("#videoModal");
-                modal.find(".modal-body").html(videoElement);
-                modal.modal("show");
+                videoElement.autoplay = true;
+                videoElement.preload = "auto";
+                $(".embed-responsive-16by9").html(videoElement)
             });
 
 

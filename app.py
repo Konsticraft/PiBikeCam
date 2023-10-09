@@ -77,8 +77,9 @@ def index():
 
 @app.route('/video/<path:video_name>')
 def serve_video(video_name):
-    video_path = os.path.join(video_dir, video_name)
-    return send_file(video_path, mimetype='video/mp4')
+     return send_from_directory("videos", video_name)
+    # video_path = os.path.join(video_dir, video_name)
+    # return send_file(video_path, mimetype='video/mp4')
 
 @app.route('/thumbs/<path:thumb_name>')
 def serve_thumb(thumb_name):
