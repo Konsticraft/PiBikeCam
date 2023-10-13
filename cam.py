@@ -19,7 +19,7 @@ def converter_process(input_file):
     
     os.remove(f"/home/pi/PiBikeCam/output/{input_file}.h264")
     
-def record_video(SEGMENT_LEN = 300):
+def record_video(SEGMENT_LEN = 60):
     
     # Set up the camera
     camera = picamera.PiCamera()
@@ -28,7 +28,7 @@ def record_video(SEGMENT_LEN = 300):
 
     # Create a file name template for the video segments
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-    output_file_template = f"/home/pi/PiBikeCam/output/video_{timestamp}.h264"
+    output_file_template = f"output/video_{timestamp}.h264"
     file_name = f"video_{timestamp}"
 
 
@@ -38,14 +38,17 @@ def record_video(SEGMENT_LEN = 300):
         while True:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
             camera.annotate_text = timestamp
-            output_file_template = f"/home/pi/PiBikeCam/output/video_{timestamp}.h264"
+            output_file_template = f"output/video_{timestamp}.h264"
             print("starting recording " + output_file_template)
             file_name = f"video_{timestamp}"
             #TODO: add thumbnail creation
+            thumb_file = f"thumbs/video_{timestamp}.png"
+            camera.capture(thumb_file)
             camera.start_recording(output_file_template)
             start_time = time.time()
 
             while (time.time() - start_time) < SEGMENT_LEN:
+                #print("recording running")
                 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
                 camera.annotate_text = timestamp
                 camera.wait_recording(1)
@@ -55,6 +58,7 @@ def record_video(SEGMENT_LEN = 300):
     except KeyboardInterrupt:
         pass
     finally:
+        print("Stopping Recording") 
         convert_to_mp4(file_name, final = True)
         camera.close()
         
