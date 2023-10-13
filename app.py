@@ -74,15 +74,21 @@ def get_videos():
 		})
     return videos
 
+@app.route('/exit')
+def shutdown_server():
+    if recording_running:
+        recording_process.send_signal(signal.SIGINT)
+    os.kill(os.getpid(), signal.SIGINT)
+    return "Shutting down server ..."
 
-def signal_handler(sig, frame):
-	print("shutting down server")
-	global recording_running
-	global recording_process
-	if recording_running:
-		recording_process.send_signal(signal.SIGINT)
-		recording_running = False
-	exit()
+
+def signal_handler():
+    print("shutting down server")
+    global recording_running
+    global recording_process
+    if recording_running:
+        recording_process.send_signal(signal.SIGINT)
+    return "interrupt signal"
 
 
 @app.route('/start_recording')
@@ -104,7 +110,6 @@ def start_recording_route():
 def index():
     video_list = get_videos()
     return render_template('home.html', video_list=video_list, recording_running = recording_running)
-
 
 @app.route('/video/<path:video_name>')
 def serve_video(video_name):
