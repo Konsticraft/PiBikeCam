@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Settings</h1>
+    <form method="POST" action="/update_settings">
+        <label for="Autostart">Recording Autostart</label>
+        <input type="checkbox" name="Autostart" {% if auto_rec == 'True' %}checked{% endif %}><br>
+        <label for="seg_len">Video segment length</label>
+        <input type="number" name="seg_len" value="{{ seg_len }}"><br>
+        <label for="port">port</label>
+        <input type="number" name=port value="{{ port }}"><br>
+        <input type="submit" value="Save">
+    </form>
+
+{% endblock content %}

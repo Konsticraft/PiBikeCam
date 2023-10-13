@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% block content %}
+    <form action="/start_recording" method="get">
+        <button type="submit">Start Recording</button>
+    </form>
+    <div class="row">
+        <!-- Video Player -->
+        <div class = "col" style="width: 75%;">
+            <div class="embed-responsive embed-responsive-16by9">
+                <h1>Select a Video</h1>
+                <!-- <video controls autoplay width="1280" height="720">
+                    <source src="{{ url_for('serve_video', video_name=request.args.get('video_name', '')) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video> -->
+            </div>
+        </div>
+        <div class="col-md-auto">
+            <h1>Recorded Videos</h1>
+            <!-- Date Picker -->
+            <div class="row">
+                    <label for="datepicker">Select a date:</label>
+                    <div class="input-group date">
+                        <input type="text" id="datepicker" class="form-control">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fa fa-calendar"></i>
+                            </span>
+                        </div>
+                    </div>
+            </div>
+            <!-- Video List -->
+            {% for video in video_list %}
+            <div class="row video-row" data-date="{{video.date}}">
+                <div class="col">
+                    <img src="{{ url_for('serve_thumb', thumb_name=video.thumb_path) }}" alt="thumbnail" style="height: 108px;">
+                </div>
+                <div class="col">
+                    {{video.timestr}}
+                    <button class ="play-button btn btn-primary" data-video="{{ video.filename}}">Play</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".play-button").on("click", function() {
+                var videoFilename = $(this).data("video");
+                var videoUrl = "{{ url_for('stream_video', video_name='') }}/" + videoFilename;
+
+                // Create a video element and append it to a modal or a custom video player container
+                var videoElement = document.createElement("video");
+                videoElement.src = videoUrl;
+                videoElement.controls = true;
+                videoElement.autoplay = true;
+                videoElement.preload = "auto";
+                $(".embed-responsive-16by9").html(videoElement)
+            });
+
+
+
+            $('#datepicker').datepicker({
+                format: "yyyy-mm-dd",
+                weekStart: 1,
+                todayBtn: "linked",
+                clearBtn: true,
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $("#datepicker").on("changeDate", function (e) {
+                var selectedDate = e.format();
+                // Hide all video rows
+                $(".video-row").hide();
+
+                // show all when no date given
+                if(selectedDate == "") {
+                    $(".video-row").show();
+                } else {
+                // Show only video rows with the selected date
+                $(".video-row[data-date='" + selectedDate + "']").show();
+                }
+            });
+        });
+    </script>
+{% endblock content %}
