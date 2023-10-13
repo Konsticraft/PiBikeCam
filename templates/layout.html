@@ -34,12 +34,19 @@
             <div class="collapse navbar-collapse" id="navbarToggle">
               <div class="navbar-nav mr-auto">
                 <a class="nav-item nav-link" href="/">Home</a>
-                <a class="nav-item nav-link" href="/about">About</a>
               </div>
               <!-- Navbar Right Side -->
               <div class="navbar-nav">
                 <a class="nav-item nav-link" href="/settings">Settings</a>
-                <a class="nav-item nav-link" href="/register">Register</a>
+                {% if recording_running %}
+                <a class="nav-item nav-link" href="/start_recording">
+                    <button class="btn btn-success">Stop Recording</button>
+                </a>
+                {% else %}
+                <a class="nav-item nav-link" href="/start_recording">
+                    <button class="btn btn-danger">Start Recording</button>
+                </a>
+                {% endif %}
               </div>
             </div>
           </div>

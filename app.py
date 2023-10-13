@@ -1,21 +1,59 @@
-from flask import Flask, render_template, send_file, request, Response, url_for, send_from_directory
+from flask import Flask, render_template, send_file, request, Response, url_for, send_from_directory, redirect
 import os
 import subprocess
 import multiprocessing
 import signal
 import datetime
+import configparser
 
 app = Flask(__name__)
 # Directory where your recorded videos are stored
 video_dir = os.path.abspath("PiBikeCam/videos")
 thumb_dir = os.path.abspath("PiBikeCam/thumbs")
+config_path = os.path.abspath("PiBikeCam/config.ini")
 recording_running = False
 recording_process = None
+config = {}
+parser = None
+
+def set_config():
+    global config
+    global parser
+    global config_path
+    parser = configparser.ConfigParser()
+    parser.read(config_path)
+    config = parser["DEFAULT"]
+
+@app.route('/settings')
+def settings_route():
+    auto_rec = config["recording_autostart"]
+    port = config["port"]
+    seg_len = config["segment_length"]
+    return render_template('settings.html', auto_rec = auto_rec, port = port, seg_len = seg_len)
+
+@app.route('/update_settings', methods=['POST'])
+def update_settings():
+    rec_auto = "True" if request.form.get('Autostart') else "False"
+    seg_len = request.form.get('seg_len')
+    port = request.form.get('port')
+    global config
+    config = {
+         "recording_autostart" : rec_auto,
+         "segment_length" : seg_len,
+         "port" : port
+    }
+    global parser
+    parser["DEFAULT"] = config
+    with open(config_path, 'w') as configfile:
+        parser.write(configfile)
+    
+    return redirect(url_for('settings_route'))
 
 
 def start_recording():
-	recording_process = subprocess.Popen(
-	    ["python3", os.path.abspath("PiBikeCam/cam.py")])
+    global recording_process
+    recording_process = subprocess.Popen(
+        ["python3", os.path.abspath("PiBikeCam/cam.py")])
 
 
 def get_videos():
@@ -27,7 +65,6 @@ def get_videos():
         date = datetime.datetime.strftime(time, "%Y-%m-%d")
         #thumb = os.path.join(thumb_dir,file.replace("mp4", "png")).replace("\\","/")
         thumb = file.replace("mp4", "png")
-        print(time)
         videos.append({
               "filename" : file,
               "timestamp" : time,
@@ -56,28 +93,22 @@ def start_recording_route():
 		recording_running = True
 		recording_process = multiprocessing.Process(target=start_recording)
 		recording_process.start()
-		return "Recording started"
+		return redirect(url_for('index'))
 	else:
 		recording_process.send_signal(signal.SIGINT)
 		recording_running = False
-		return "stopped recording"
-
-@app.route('/settings')
-def settings_route():
-     return render_template('settings.html')
+		return redirect(url_for('index'))
 
 @app.route('/home')
 @app.route('/')
 def index():
-    # video_files = [file for file in os.listdir(
-    #     video_dir) if file.endswith('.mp4')]
     video_list = get_videos()
-    return render_template('home.html', video_list=video_list)
+    return render_template('home.html', video_list=video_list, recording_running = recording_running)
 
 
 @app.route('/video/<path:video_name>')
 def serve_video(video_name):
-     return send_from_directory("videos", video_name)
+    return send_from_directory("videos", video_name)
     # video_path = os.path.join(video_dir, video_name)
     # return send_file(video_path, mimetype='video/mp4')
 
@@ -100,8 +131,11 @@ def stream_video(video_name):
 
 
 if __name__ == '__main__':
-    # start_recording_route()
+    set_config()
+    if config["recording_autostart"] == "True":
+        start_recording_route()
     get_videos()
     signal.signal(signal.SIGINT, signal_handler)
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    print("INIT complete, starting server________________")
+    app.run(host='0.0.0.0', port=config["port"], debug=True)
     
