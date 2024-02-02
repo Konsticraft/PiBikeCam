@@ -38,7 +38,7 @@
               <!-- Navbar Right Side -->
               <div class="navbar-nav">
                 <a class="nav-item nav-link" href="/settings">Settings</a>
-                <a class="nav-item nav-link" href="/exit">Shit down</a>
+                <a class="nav-item nav-link" href="/exit">Shut down</a>
                 {% if recording_running %}
                 <a class="nav-item nav-link" href="/start_recording">
                     <button class="btn btn-success">Stop Recording</button>
@@ -48,6 +48,11 @@
                     <button class="btn btn-danger">Start Recording</button>
                 </a>
                 {% endif %}
+                <div class="nav-item">
+                    <div class ="battery-box" style="background-color: {% if battery_percentage < 20 %}#e74c3c{% elif battery_percentage < 50 %}#f39c12{% else %}#27ae60{% endif %}">
+                        Battery: {{ battery_percentage }}%
+                    </div>
+                </div>
               </div>
             </div>
           </div>
