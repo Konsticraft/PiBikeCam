@@ -10,6 +10,16 @@ GPIO.setup(4, GPIO.IN)
 
 bus = smbus2.SMBus(1)  # 0 = /dev/i2c-0 (port I2C0), 1 = /dev/i2c-1 (port I2C1)
 
+
+def QuickStart(bus):
+    address = 0x36
+    bus.write_word_data(address, 0x06, 0x4000)
+
+
+def PowerOnReset(bus):
+    address = 0x36
+    bus.write_word_data(address, 0xfe, 0x0054)
+
 PowerOnReset(bus)
 QuickStart(bus)
 
