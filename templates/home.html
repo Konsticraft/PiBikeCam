@@ -1,11 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-    <form action="/start_recording" method="get">
-        <button type="submit">Start Recording</button>
-    </form>
     <div class="row">
         <!-- Video Player -->
-        <div class = "col" style="width: 75%;">
+        <div class = "col-lg-8">
             <div class="embed-responsive embed-responsive-16by9">
                 <h1>Select a Video</h1>
                 <!-- <video controls autoplay width="1280" height="720">
@@ -14,10 +11,9 @@
                 </video> -->
             </div>
         </div>
-        <div class="col-md-auto">
-            <h1>Recorded Videos</h1>
-            <!-- Date Picker -->
+        <div class="col-lg-4">
             <div class="row">
+                <div class="col">
                     <label for="datepicker">Select a date:</label>
                     <div class="input-group date">
                         <input type="text" id="datepicker" class="form-control">
@@ -27,19 +23,48 @@
                             </span>
                         </div>
                     </div>
-            </div>
-            <!-- Video List -->
-            {% for video in video_list %}
-            <div class="row video-row" data-date="{{video.date}}">
-                <div class="col">
-                    <img src="{{ url_for('serve_thumb', thumb_name=video.thumb_path) }}" alt="thumbnail" style="height: 108px;">
-                </div>
-                <div class="col">
-                    {{video.timestr}}
-                    <button class ="play-button btn btn-primary" data-video="{{ video.filename}}">Play</button>
                 </div>
             </div>
-            {% endfor %}
+            <div class = "row">
+                <div class="col-md-auto" style="overflow-y: scroll; height: 1000px;">
+                    <h1>Recorded Highlights</h1>
+                    <!-- Highlight List -->
+                    {% for highlight in highlight_list %}
+                    <div class="row video-row" data-date="{{highlight.date}}">
+                        <div class="col">
+                            <img src="{{ url_for('serve_thumb', thumb_name=highlight.thumb_path) }}" alt="thumbnail" style="height: 108px;">
+                        </div>
+                        <div class="col">
+                            <div class = "row">
+                                {{highlight.timestr}}
+                            </div>
+                            <div class = "row">
+                                <button class ="play-button btn btn-primary" data-video="{{ highlight.filename}}">Play</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-auto" style="overflow-y: scroll; height: 1000px;">
+                    <h1>Recorded Videos</h1>
+                    <!-- Video List -->
+                    {% for video in video_list %}
+                    <div class="row video-row" data-date="{{video.date}}">
+                        <div class="col">
+                            <img src="{{ url_for('serve_thumb', thumb_name=video.thumb_path) }}" alt="thumbnail" style="height: 108px;">
+                        </div>
+                        <div class="col">
+                            <div class = "row">
+                                {{video.timestr}}
+                            </div>
+                            <div class = "row">
+                                <button class ="play-button btn btn-primary" data-video="{{ video.filename}}">Play</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 
